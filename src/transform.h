@@ -1,8 +1,8 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
-#include "SquareMatrix.h"
-#include "Vec.h"
-#include "Bounds.h"
+#include "square_matrix.h"
+#include "vec.h"
+#include "bounds.h"
 #include <math.h>
 
 class Transform {

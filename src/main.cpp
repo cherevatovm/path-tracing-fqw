@@ -1,30 +1,35 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define _USE_MATH_DEFINES
-#include "stb_image_write.h"
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
+
 #include <GL/glew.h>
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
+
 #include <iostream>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <locale.h>
+#include <cstdint>
 #include <ctime>
 #include <chrono>
 #include <random>
 #include <vector>
-#include "Vec.h"
-#include "Ray.h"
-#include "Shape.h"
-#include "Material.h"
-#include "Microfacets.h"
-#include "BVH_related.h"
-#include "Rand_om.h"
-#include "Utility.h"
-#include "ImFileDialog/ImFileDialog.h"
+
+#include "vec.h"
+#include "ray.h"
+#include "shape.h"
+#include "material.h"
+#include "microfacets.h"
+#include "bvh_related.h"
+#include "my_random.h"
+#include "utility.h"
+
+#include "ImFileDialog.h"
+#include "stb_image_write.h"
 
 using namespace std::chrono;
 
@@ -35,8 +40,8 @@ static void glfw_error_callback(int error, const char* description) {
 int width = 1024, height = 768, samples;
 Vec* image;
 std::string ui_text = "";
-std::vector<uint> model_choices = { 0, 0 };
-std::vector<uint> material_choices = { 0, 0 };
+std::vector<int> model_choices = { 0, 0 };
+std::vector<int> material_choices = { 0, 0 };
 std::vector<double> roughness_choices = { 0.0, 0.0 };
 
 class Scene {
@@ -367,7 +372,7 @@ public:
 				break;
 			}
 			case 1:
-				res = m->load_model("3D models/cube.obj");
+				res = m->load_model("3d_models/cube.obj");
 				if (res == 0) {
 					m->scale(15, 15, 15);
 					if (i == 0) {
@@ -381,7 +386,7 @@ public:
 				}
 				break;
 			case 2:
-				res = m->load_model("3D models/pinetree.obj");
+				res = m->load_model("3d_models/pinetree.obj");
 				if (res == 0) {
 					m->scale(0.2, 0.2, 0.2, false);
 					if (i == 0)
@@ -393,7 +398,7 @@ public:
 				}
 				break;
 			case 3:
-				res = m->load_model("3D models/dog.obj");
+				res = m->load_model("3d_models/dog.obj");
 				if (res == 0) {
 					if (i == 0) {
 						m->rotate(20, 1);
@@ -406,7 +411,7 @@ public:
 				}
 				break;
 			case 4:
-				res = m->load_model("3D models/skull.obj");
+				res = m->load_model("3d_models/skull.obj");
 				if (res == 0) {
 					m->scale(5, 5, 5);
 					if (i == 0) {
@@ -420,7 +425,7 @@ public:
 				}
 				break;
 			case 5:
-				res = m->load_model("3D models/heart.obj");
+				res = m->load_model("3d_models/heart.obj");
 				if (res == 0) {
 					m->scale(2, 2, 2);
 					m->rotate(-90, 0);
@@ -435,7 +440,7 @@ public:
 				}
 				break;
 			case 6:
-				res = m->load_model("3D models/gear.obj");
+				res = m->load_model("3d_models/gear.obj");
 				if (res == 0) {
 					m->scale(4, 4, 4);
 					if (i == 0) {
@@ -449,7 +454,7 @@ public:
 				}
 				break;
 			case 7:
-				res = m->load_model("3D models/GLman02.obj");
+				res = m->load_model("3d_models/GLman02.obj");
 				if (res == 0) {
 					m->scale(0.4, 0.4, 0.4);
 					if (i == 0) {
@@ -463,7 +468,7 @@ public:
 				}
 				break;
 			case 8:
-				res = m->load_model("3D models/weird_sphere.obj");
+				res = m->load_model("3d_models/weird_sphere.obj");
 				if (res == 0) {				
 					m->scale(25, 25, 25);
 					if (i == 0) {
@@ -564,9 +569,9 @@ public:
 			camera_y = (camera_x % camera.dir).norm() * 0.5135;
 		const int bar_width = 50; // Progress bar width
 		const double sigma = 1.5; // Standard deviation
-#pragma omp parallel for schedule(dynamic, 1) private(result)       // Use OpenMP 
+//#pragma omp parallel for schedule(dynamic, 1) private(result)       // Use OpenMP 
 		for (int y = 0; y < height; y++) {                       // Go through image rows 
-#pragma omp critical
+//#pragma omp critical
 			{
 				float percent = 100.0f * y / (height - 1);
 				int filled = static_cast<int>(percent * bar_width / 100.0f);
@@ -720,7 +725,8 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 130");
 
-	// ImFileDialog requires you to set the CreateTexture and DeleteTexture
+	//ImFileDialog requires you to set the CreateTexture and DeleteTexture
+	
 	ifd::FileDialog::Instance().CreateTexture = [](uint8_t* data, int w, int h, char fmt) -> void* {
 		GLuint tex;
 
@@ -734,12 +740,12 @@ int main() {
 		glGenerateMipmap(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
-		return (void*)tex;
-		};
+		return reinterpret_cast<void*>(static_cast<uintptr_t>(tex));
+	};
 	ifd::FileDialog::Instance().DeleteTexture = [](void* tex) {
-		GLuint texID = (GLuint)tex;
+		GLuint texID = static_cast<GLuint>(reinterpret_cast<uintptr_t>(tex));
 		glDeleteTextures(1, &texID);
-		};
+	};
 
 	GLuint tex_id = create_texture();
 	// Save the result to png image

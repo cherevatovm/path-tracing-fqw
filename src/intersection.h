@@ -1,6 +1,6 @@
 #ifndef INTERSECTION_H
 #define INTERSECTION_H
-#include "Shape.h"
+#include "shape.h"
 
 class Shape;
 

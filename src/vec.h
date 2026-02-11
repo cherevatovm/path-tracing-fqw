@@ -1,7 +1,7 @@
 #ifndef VEC_H
 #define VEC_H
 #include <math.h>
-#include "Utility.h"
+#include "utility.h"
 
 constexpr float eps = std::numeric_limits<float>::epsilon();
 

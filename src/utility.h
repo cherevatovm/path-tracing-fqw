@@ -3,21 +3,26 @@
 #include <sstream>
 #include <vector>
 #include <string>
-#include "Rand_om.h"
+#include <algorithm> 
+#include "my_random.h"
 
 inline double clamp01(double x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
 inline int to_int(double x) { return int(pow(clamp01(x), 1 / 2.2) * 255 + 0.5); }
 
-std::vector<std::string> split(const std::string& str, char sep = ' ') {
-	std::vector<std::string> res;
-	std::stringstream iss(str);
-	std::string word;
-	while (std::getline(iss, word, sep)) {
-		if (word.empty())
-			continue;
-		res.push_back(word);
-	}
-	return res;
+static std::vector<std::string> split(const std::string& str) {
+    std::vector<std::string> result;
+    std::string cleaned = str;
+
+    cleaned.erase(std::remove(cleaned.begin(), cleaned.end(), '\r'), cleaned.end());
+    cleaned.erase(std::remove(cleaned.begin(), cleaned.end(), '\n'), cleaned.end());
+    
+    std::istringstream iss(cleaned);
+    std::string token;
+    
+    while (iss >> token)
+        result.push_back(token);
+    
+    return result;
 }
 
 inline double clamp(double val, double low, double high) {

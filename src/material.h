@@ -1,6 +1,6 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
-#include "Vec.h"
+#include "vec.h"
 
 enum Refl_type { DIFF, SPEC, REFR, ROUGH, ROUGH_DIEL };
 

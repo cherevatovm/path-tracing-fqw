@@ -1,6 +1,6 @@
 #ifndef RAY_H
 #define RAY_H
-#include "Vec.h"
+#include "vec.h"
 
 struct Ray {
 	Vec orig, dir;

@@ -2,7 +2,7 @@
 #define AABB_H
 #include <vector>
 #include <limits>
-#include "Vec.h"
+#include "vec.h"
 
 class Bounds3 {
 private:

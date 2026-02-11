@@ -1,7 +1,7 @@
 #ifndef BVH_H
 #define BVH_H
-#include "Shape.h"
-#include "Bounds.h"
+#include "shape.h"
+#include "bounds.h"
 
 class BoundingInfo {
 public:

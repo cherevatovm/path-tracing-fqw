@@ -5,13 +5,13 @@
 #include <sstream>
 #include <string>
 #include <list>
-#include "Vec.h"
-#include "Ray.h"
-#include "Material.h"
-#include "Bounds.h"
-#include "Transform.h"
-#include "Utility.h"
-#include "Intersection.h"
+#include "vec.h"
+#include "ray.h"
+#include "material.h"
+#include "bounds.h"
+#include "transform.h"
+#include "utility.h"
+#include "intersection.h"
 
 using uint = unsigned int;
 
@@ -97,7 +97,7 @@ private:
 		MeshTriangle(const Mesh* mesh_,
 			uint v1_ind_, uint v2_ind_, uint v3_ind_,
 			Material material_, Vec emis_ = Vec(),
-			uint v1_n_ind_ = UINT_MAX, uint v2_n_ind_ = UINT_MAX, uint v3_n_ind_ = UINT_MAX) :
+			uint v1_n_ind_ = UINT32_MAX, uint v2_n_ind_ = UINT32_MAX, uint v3_n_ind_ = UINT32_MAX) :
 			Shape(material_, emis_), mesh(mesh_),
 			vert0_ind(v1_ind_), vert1_ind(v2_ind_), vert2_ind(v3_ind_),
 			vert0_norm_ind(v1_n_ind_), vert1_norm_ind(v2_n_ind_), vert2_norm_ind(v3_n_ind_) 
@@ -172,7 +172,7 @@ private:
 		}
 
 		Vec get_normal(const Intersection& inters) const override {
-			if (vert0_norm_ind == UINT_MAX || is_flat)
+			if (vert0_norm_ind == UINT32_MAX || is_flat)
 				return surface_normal;
 			else {
 				Vec hp_normal = mesh->vert_normals[vert0_norm_ind] * inters.baryc_coords.x +
@@ -293,6 +293,8 @@ private:
 				}
 			}
 		}
+		if (vertex_ind > 1000000 || norm_ind > 1000000)
+			std:: cout << "pizdec" << std::endl;
 		face->calc_surface_normal();
 	}
 

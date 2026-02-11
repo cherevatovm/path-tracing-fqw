@@ -1,7 +1,7 @@
 ﻿#ifndef MICROFACETS_H
 #define MICROFACETS_H
 #define _USE_MATH_DEFINES
-#include "Vec.h"
+#include "vec.h"
 
 Vec sample_wm(unsigned short* Xi, const Vec& n, double roughness) {
     double r1 = 2 * M_PI * erand48(Xi);
