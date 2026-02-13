@@ -10,11 +10,9 @@
 
 #include <iostream>
 #include <math.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <locale.h>
 #include <cstdint>
-#include <ctime>
 #include <chrono>
 #include <random>
 #include <vector>
@@ -561,50 +559,6 @@ public:
 		}
 
 	}
-
-	void render_wout_supersampling(int samples) {
-		Vec result;
-		Ray camera(Vec(50, 52, 295.6), Vec(0, -0.042612, -1).norm());
-		Vec camera_x = Vec(width * 0.5135 / height),
-			camera_y = (camera_x % camera.dir).norm() * 0.5135;
-		const int bar_width = 50; // Progress bar width
-		const double sigma = 1.5; // Standard deviation
-//#pragma omp parallel for schedule(dynamic, 1) private(result)       // Use OpenMP 
-		for (int y = 0; y < height; y++) {                       // Go through image rows 
-//#pragma omp critical
-			{
-				float percent = 100.0f * y / (height - 1);
-				int filled = static_cast<int>(percent * bar_width / 100.0f);
-				filled = std::max(0, std::min(bar_width, filled));
-				std::string bar(filled, '=');
-				bar.append(bar_width - filled, ' ');
-				fprintf(stderr, "\rRendering (%d samples per pixel): [%s] %5.2f%%", samples, bar.c_str(), percent);
-				fflush(stderr);
-			}
-			for (unsigned short x = 0, Xi[3] = { 0, 0, y * y * y }; x < width; x++) { // Go through image cols 
-				int i = (height - y - 1) * width + x; // Index in the image array
-				result = Vec(); // Reset result for the current pixel
-
-				for (int s = 0; s < samples; s++) {
-					double r1 = erand48(Xi), r2 = erand48(Xi);
-					double z1, z2;
-					box_muller(r1, r2, z1, z2);
-					double offset_x = z1 * sigma, offset_y = z2 * sigma;
-					offset_x = std::clamp(offset_x, -1.0, 1.0);
-					offset_y = std::clamp(offset_y, -1.0, 1.0);
-
-					// For tent filter
-					//double r1 = 2 * erand48(Xi), offset_x = r1 < 1 ? sqrt(r1) - 1 : 1 - sqrt(2 - r1);
-					//double r2 = 2 * erand48(Xi), offset_y = r2 < 1 ? sqrt(r2) - 1 : 1 - sqrt(2 - r2);
-
-					Vec d = camera_x * ((x + offset_x + 0.5) / width - 0.5) +
-						camera_y * ((y + offset_y + 0.5) / height - 0.5) + camera.dir;
-					result = result + path_tracing(Ray(camera.orig + d * 140, d.norm()), 0, Xi) * (1.0 / samples);
-				}
-				image[i] = image[i] + Vec(clamp01(result.x), clamp01(result.y), clamp01(result.z));
-			}
-		}
-	}
 };
 
 GLuint create_texture() {
@@ -699,7 +653,6 @@ int main() {
 	
 	high_resolution_clock::time_point t1 = high_resolution_clock::now();
 	sc.render_with_supersampling();
-	//sc.render_wout_supersampling(samples * 4);
 	high_resolution_clock::time_point t2 = high_resolution_clock::now();
 	printf("\nTime elapsed: %d ms;\n", std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count());
 	glfwSetErrorCallback(glfw_error_callback);
@@ -726,7 +679,6 @@ int main() {
 	ImGui_ImplOpenGL3_Init("#version 130");
 
 	//ImFileDialog requires you to set the CreateTexture and DeleteTexture
-	
 	ifd::FileDialog::Instance().CreateTexture = [](uint8_t* data, int w, int h, char fmt) -> void* {
 		GLuint tex;
 
