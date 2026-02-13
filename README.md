@@ -8,7 +8,7 @@
 
 ![Зеркало и стекло, 4096 spp](render_results/smooth_4096_spp.png)
 ![Металл и матовое стекло, 4096 spp](render_results/microfacet_4096_spp.png)
-где spp - кол-во семплов на пиксель
+Изображения в разрешении 1024x768, 4096 семплов на пиксель
 
 ## Особенности
 * Параллельный рендеринг на CPU (OpenMP)
@@ -49,7 +49,7 @@
 * Dear ImGui
 * stb_image_write
 
-
+-------------------------------------------------------------
 
 # Path tracing
 This project is an implementation of global illumination using the path tracing method with PBR materials. 
