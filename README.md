@@ -30,6 +30,7 @@
 ### Шероховатые (на основе микрограней)
 * Шероховатый металл
 * Шероховатый диэлектрик (к примеру, матовое стекло или пластик)
+
 Параметр шероховатости задаётся в диапазоне [0, 1].
 
 ## Этапы рендеринга
@@ -77,6 +78,7 @@ After calculations are complete, the result is displayed in a window and can be 
 ### Rough (microfacet-based)
 * Rough metal
 * Rough dielectric (e.g., frosted glass or plastic)
+
 Roughness parameter can be set in the [0, 1] range.
 
 ## Rendering Pipeline
